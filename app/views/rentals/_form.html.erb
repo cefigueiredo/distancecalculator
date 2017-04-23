@@ -1,4 +1,4 @@
-<%= form_for(rental) do |f| %>
+<%= form_for(rental, multipart: true) do |f| %>
   <% if rental.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(rental.errors.count, "error") %> prohibited this rental from being saved:</h2>
@@ -10,6 +10,10 @@
       </ul>
     </div>
   <% end %>
+  <div class="field positions">
+    <%= f.label :positions, 'Positions:' %>
+    <%= f.file_field :positions %>
+  </div>
 
   <div class="actions">
     <%= f.submit %>

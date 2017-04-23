@@ -1,3 +1,5 @@
+require 'csv'
+
 class RentalsController < ApplicationController
   before_action :set_rental, only: [:show, :edit, :update, :destroy]
 
@@ -24,7 +26,8 @@ class RentalsController < ApplicationController
   # POST /rentals
   # POST /rentals.json
   def create
-    @rental = Rental.new(rental_params)
+    @rental = Rental.new
+    @rental.positions = parsed_positions
 
     respond_to do |format|
       if @rental.save
@@ -41,7 +44,7 @@ class RentalsController < ApplicationController
   # PATCH/PUT /rentals/1.json
   def update
     respond_to do |format|
-      if @rental.update(rental_params)
+      if @rental.update(positions: parsed_positions)
         format.html { redirect_to @rental, notice: 'Rental was successfully updated.' }
         format.json { render :show, status: :ok, location: @rental }
       else
@@ -69,6 +72,27 @@ class RentalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def rental_params
-      params.fetch(:rental, {})
+      params.fetch(:rental, {}).permit(:positions_file)
+    end
+
+    def parsed_positions
+      csv = CSV.read rental_params[:positions_file].path, col_sep: ';'
+      return nil if csv.empty?
+
+      first = csv.first
+      last = csv.last
+      parsed_params = {
+        start_position: {time: first[0], lat: first[1], lng: first[2] },
+        end_position: { time: last[0], lat: last[1], lng: last[2] },
+        transit_positions: []
+      }
+
+      csv[1..-2].each do |row|
+        parsed_params[:transit_positions] << { time: row[0], lat: row[1], lng: row[2] }
+      end
+
+      parsed_params
+    rescue StandardError => e
+      return nil
     end
 end

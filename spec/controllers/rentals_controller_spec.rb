@@ -19,16 +19,43 @@ require 'rails_helper'
 # that an instance is receiving a specific message.
 
 RSpec.describe RentalsController, type: :controller do
+  let(:valid_file) {
+    Rack::Test::UploadedFile.new 'spec/support/valid_positions.csv'
+  }
+
+  let(:valid_params) {
+    {
+      rental: {
+        positions_file: valid_file
+      }
+    }
+  }
+
+  let(:invalid_params) {
+    {
+      rental: {
+        positions: {}
+      }
+    }
+  }
 
   # This should return the minimal set of attributes required to create a valid
   # Rental. As you add validations to Rental, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+      positions: {
+        start_position: { time: 1472829721, lat: 48.09197, lng: -1.65535 },
+        end_position: { time: 1472829721, lat: 48.09197, lng: -1.65535 },
+        transit_positions: []
+      }
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    {
+      positions: nil
+    }
   }
 
   # This should return the minimal set of values that should be in the session
@@ -71,30 +98,30 @@ RSpec.describe RentalsController, type: :controller do
     context "with valid params" do
       it "creates a new Rental" do
         expect {
-          post :create, params: {rental: valid_attributes}, session: valid_session
+          post :create, params: valid_params, session: valid_session
         }.to change(Rental, :count).by(1)
       end
 
       it "assigns a newly created rental as @rental" do
-        post :create, params: {rental: valid_attributes}, session: valid_session
+        post :create, params: valid_params, session: valid_session
         expect(assigns(:rental)).to be_a(Rental)
         expect(assigns(:rental)).to be_persisted
       end
 
       it "redirects to the created rental" do
-        post :create, params: {rental: valid_attributes}, session: valid_session
+        post :create, params: valid_params, session: valid_session
         expect(response).to redirect_to(Rental.last)
       end
     end
 
     context "with invalid params" do
       it "assigns a newly created but unsaved rental as @rental" do
-        post :create, params: {rental: invalid_attributes}, session: valid_session
+        post :create, params: invalid_params, session: valid_session
         expect(assigns(:rental)).to be_a_new(Rental)
       end
 
       it "re-renders the 'new' template" do
-        post :create, params: {rental: invalid_attributes}, session: valid_session
+        post :create, params: invalid_params, session: valid_session
         expect(response).to render_template("new")
       end
     end
@@ -102,26 +129,23 @@ RSpec.describe RentalsController, type: :controller do
 
   describe "PUT #update" do
     context "with valid params" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
 
       it "updates the requested rental" do
         rental = Rental.create! valid_attributes
-        put :update, params: {id: rental.to_param, rental: new_attributes}, session: valid_session
+        put :update, params: valid_params.merge(id: rental.to_param), session: valid_session
         rental.reload
         skip("Add assertions for updated state")
       end
 
       it "assigns the requested rental as @rental" do
         rental = Rental.create! valid_attributes
-        put :update, params: {id: rental.to_param, rental: valid_attributes}, session: valid_session
+        put :update, params: valid_params.merge(id: rental.to_param), session: valid_session
         expect(assigns(:rental)).to eq(rental)
       end
 
       it "redirects to the rental" do
         rental = Rental.create! valid_attributes
-        put :update, params: {id: rental.to_param, rental: valid_attributes}, session: valid_session
+        put :update, params: valid_params.merge(id: rental.to_param), session: valid_session
         expect(response).to redirect_to(rental)
       end
     end
@@ -129,13 +153,13 @@ RSpec.describe RentalsController, type: :controller do
     context "with invalid params" do
       it "assigns the rental as @rental" do
         rental = Rental.create! valid_attributes
-        put :update, params: {id: rental.to_param, rental: invalid_attributes}, session: valid_session
+        put :update, params: invalid_params.merge(id: rental.to_param), session: valid_session
         expect(assigns(:rental)).to eq(rental)
       end
 
       it "re-renders the 'edit' template" do
         rental = Rental.create! valid_attributes
-        put :update, params: {id: rental.to_param, rental: invalid_attributes}, session: valid_session
+        put :update, params: invalid_params.merge(id: rental.to_param), session: valid_session
         expect(response).to render_template("edit")
       end
     end
