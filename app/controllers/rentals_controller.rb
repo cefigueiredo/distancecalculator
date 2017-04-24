@@ -26,8 +26,7 @@ class RentalsController < ApplicationController
   # POST /rentals
   # POST /rentals.json
   def create
-    @rental = Rental.new
-    @rental.positions = parsed_positions
+    @rental = Rental.new(rental_params)
 
     respond_to do |format|
       if @rental.save
@@ -44,7 +43,7 @@ class RentalsController < ApplicationController
   # PATCH/PUT /rentals/1.json
   def update
     respond_to do |format|
-      if @rental.update(positions: parsed_positions)
+      if @rental.update(rental_params)
         format.html { redirect_to @rental, notice: 'Rental was successfully updated.' }
         format.json { render :show, status: :ok, location: @rental }
       else
@@ -72,11 +71,17 @@ class RentalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def rental_params
-      params.fetch(:rental, {}).permit(:positions_file, :name)
+      parameters = params.fetch(:rental, {}).permit(:name).to_h
+
+      if params.fetch(:rental, {})[:positions_file].present?
+        parameters.merge!(positions: parsed_positions(params[:rental][:positions_file]))
+      end
+
+      parameters
     end
 
-    def parsed_positions
-      csv = CSV.read rental_params[:positions_file].path, col_sep: ';'
+    def parsed_positions(positions_file)
+      csv = CSV.read positions_file.path, col_sep: ';'
       return nil if csv.empty?
 
       first = csv.first

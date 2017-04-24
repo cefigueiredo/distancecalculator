@@ -36,7 +36,7 @@ RSpec.describe RentalsController, type: :controller do
     {
       rental: {
         name: 'Invalid',
-        positions: {}
+        positions_file: Rack::Test::UploadedFile.new('spec/support/invalid_positions.csv')
       }
     }
   }
