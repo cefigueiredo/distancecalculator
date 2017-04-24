@@ -1,5 +1,5 @@
 class AddAttributesToRental < ActiveRecord::Migration[5.0]
   def change
-    add_column :rentals, :car_model, :string
+    add_column :rentals, :name, :string
   end
 end

@@ -72,7 +72,7 @@ class RentalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def rental_params
-      params.fetch(:rental, {}).permit(:positions_file)
+      params.fetch(:rental, {}).permit(:positions_file, :name)
     end
 
     def parsed_positions
@@ -82,13 +82,13 @@ class RentalsController < ApplicationController
       first = csv.first
       last = csv.last
       parsed_params = {
-        start_position: {time: first[0], lat: first[1], lng: first[2] },
-        end_position: { time: last[0], lat: last[1], lng: last[2] },
+        start_position: {time: first[0], coordinates: "#{first[1]},#{first[2]}" },
+        end_position: {time: last[0], coordinates: "#{last[1]},#{last[2]}" },
         transit_positions: []
       }
 
       csv[1..-2].each do |row|
-        parsed_params[:transit_positions] << { time: row[0], lat: row[1], lng: row[2] }
+        parsed_params[:transit_positions] << { time: row[0], coordinates: "#{row[1]},#{row[2]}" }
       end
 
       parsed_params

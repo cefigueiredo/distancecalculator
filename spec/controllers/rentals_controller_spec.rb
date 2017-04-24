@@ -26,6 +26,7 @@ RSpec.describe RentalsController, type: :controller do
   let(:valid_params) {
     {
       rental: {
+        name: 'Valid',
         positions_file: valid_file
       }
     }
@@ -34,6 +35,7 @@ RSpec.describe RentalsController, type: :controller do
   let(:invalid_params) {
     {
       rental: {
+        name: 'Invalid',
         positions: {}
       }
     }
@@ -44,6 +46,7 @@ RSpec.describe RentalsController, type: :controller do
   # adjust the attributes here as well.
   let(:valid_attributes) {
     {
+      name: 'Valid',
       positions: {
         start_position: { time: 1472829721, lat: 48.09197, lng: -1.65535 },
         end_position: { time: 1472829721, lat: 48.09197, lng: -1.65535 },
@@ -54,6 +57,7 @@ RSpec.describe RentalsController, type: :controller do
 
   let(:invalid_attributes) {
     {
+      name: 'valid',
       positions: nil
     }
   }

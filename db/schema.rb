@@ -19,7 +19,7 @@ ActiveRecord::Schema.define(version: 20170423215838) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json     "positions"
-    t.string   "car_model"
+    t.string   "name"
   end
 
 end
