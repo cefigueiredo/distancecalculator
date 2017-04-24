@@ -21,3 +21,9 @@
 
 en:
   hello: "Hello world"
+
+  rental:
+    status:
+      waiting: 'Waiting to be processed'
+      processed: 'Processed'
+      error_processing: 'Error while processing'

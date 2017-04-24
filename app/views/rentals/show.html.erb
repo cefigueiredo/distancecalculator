@@ -3,6 +3,14 @@
   <strong>Name:</strong>
   <%= @rental.name %>
 </p>
+<p>
+  <strong>Total Distance in Km </strong>
+  <%= @rental.total_distance %>
+</p>
+<p>
+  <strong>Status</strong>
+  <%= t("rental.status.#{@rental.status}") %>
+</p>
 <div id="path-coordinates" data-encoded-polylines= <%= @rental.polylines.to_json %>></div>
 <%= link_to 'Edit', edit_rental_path(@rental) %> |
 <%= link_to 'Back', rentals_path %>

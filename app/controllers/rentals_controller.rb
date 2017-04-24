@@ -30,6 +30,7 @@ class RentalsController < ApplicationController
 
     respond_to do |format|
       if @rental.save
+        CalculateRentalDistanceJob.perform_later(@rental.id)
         format.html { redirect_to @rental, notice: 'Rental was successfully created.' }
         format.json { render :show, status: :created, location: @rental }
       else
@@ -44,6 +45,7 @@ class RentalsController < ApplicationController
   def update
     respond_to do |format|
       if @rental.update(rental_params)
+        CalculateRentalDistanceJob.perform_later(@rental.id) if rental_params.keys.include?('positions')
         format.html { redirect_to @rental, notice: 'Rental was successfully updated.' }
         format.json { render :show, status: :ok, location: @rental }
       else
@@ -74,7 +76,10 @@ class RentalsController < ApplicationController
       parameters = params.fetch(:rental, {}).permit(:name).to_h
 
       if params.fetch(:rental, {})[:positions_file].present?
-        parameters.merge!(positions: parsed_positions(params[:rental][:positions_file]))
+        parameters.merge!({
+          status: 'waiting',
+          positions: parsed_positions(params[:rental][:positions_file])
+        })
       end
 
       parameters
