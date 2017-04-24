@@ -84,19 +84,9 @@ class RentalsController < ApplicationController
       csv = CSV.read positions_file.path, col_sep: ';'
       return nil if csv.empty?
 
-      first = csv.first
-      last = csv.last
-      parsed_params = {
-        start_position: {time: first[0], coordinates: "#{first[1]},#{first[2]}" },
-        end_position: {time: last[0], coordinates: "#{last[1]},#{last[2]}" },
-        transit_positions: []
-      }
-
-      csv[1..-2].each do |row|
-        parsed_params[:transit_positions] << { time: row[0], coordinates: "#{row[1]},#{row[2]}" }
+      csv.map do |row|
+        { time: row[0], lat: row[1], lng: row[2] }
       end
-
-      parsed_params
     rescue StandardError => e
       return nil
     end
