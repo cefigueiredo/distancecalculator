@@ -4,6 +4,8 @@ module GoogleMaps
 
     attr_reader :options
 
+    GOOGLE_DIRECTIONS_POINTS_LIMIT = 9
+
     base_uri 'https://maps.googleapis.com/maps/api/directions/json'
 
     def initialize
@@ -14,10 +16,11 @@ module GoogleMaps
       path_polylines = []
       total_distance = 0
 
-      positions.each_slice(10) do |slice|
-        origin = slice.first
+      last_destination = nil
+      positions.each_slice(GOOGLE_DIRECTIONS_POINTS_LIMIT) do |slice|
+        origin = last_destination || slice.first
         destination = slice.last
-        waypoints = slice[1..-2]
+        waypoints = slice[0..-2]
 
         directions = get_directions(origin, destination, waypoints)
         directions['routes'].each do |route|
@@ -26,6 +29,8 @@ module GoogleMaps
             total_distance += leg['distance']['value']
           end
         end
+
+        last_destination = destination
       end
 
       {paths: path_polylines, total_distance: total_distance}
@@ -49,6 +54,5 @@ module GoogleMaps
 
       self.class.get('', @base_options.merge(query: query))
     end
-
   end
 end
